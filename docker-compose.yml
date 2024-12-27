@@ -1,0 +1,71 @@
+services:
+  traefik:
+    image: traefik
+    container_name: traefik
+    restart: always
+    command:
+      - "--api.insecure=false"  # Disable insecure access to the dashboard
+      - "--api.dashboard=true"  # Enable the dashboard
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.dashboard.address=:8080"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=mohdashrul70@gmail.com"  # Replace with your email
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Traefik dashboard port
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "letsencrypt:/letsencrypt"
+    labels:
+      - "traefik.enable=true"
+      # Middleware for Basic Auth with username:password
+      - "traefik.http.middlewares.auth.basicauth.users=amiro:$$apr1$$lR7QHdBp$$di9jDaGTOHhIogC38lLHy0"  # username:password hashed
+      # Secure Traefik Dashboard
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`146.190.95.231`)"  # Replace with your server IP
+      - "traefik.http.routers.traefik-dashboard.entrypoints=dashboard"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=auth"
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: always
+    volumes:
+      - ./uptime-kuma-data:/app/data
+      - "uptimekuma:/uptimekuma"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`monit.amiro-technology.com`)"  # Replace with your domain
+      - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
+      - "traefik.http.routers.uptime-kuma.tls=true"
+      - "traefik.http.routers.uptime-kuma.tls.certresolver=myresolver"
+      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
+  gotify:
+    image: "gotify/server"
+    container_name: gotify
+    restart: unless-stopped
+    environment:
+      - GOTIFY_DEFAULTUSER_NAME=${APP_USER_LOGIN}
+      - GOTIFY_DEFAULTUSER_PASS=${APP_USER_PASSWORD}
+    volumes:
+      - ./gotify-data/db:/app/db
+      - ./gotify-data/data:/app/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      # traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.gotify.rule=Host(`mirofy.amiro-technology.com`)"
+      - "traefik.http.routers.gotify.entrypoints=websecure"
+      - "traefik.http.routers.gotify.tls=true"
+      - "traefik.http.routers.gotify.tls.certresolver=myresolver"
+      - "traefik.http.services.gotify.loadbalancer.server.port=80"
+volumes:
+  data:
+  letsencrypt:
+  uptimekuma:
+
+  
