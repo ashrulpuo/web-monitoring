@@ -1,3 +1,7 @@
+### Why This Stack?
+- **Uptime Kuma**: Modern and sleek monitoring tool with rich features
+- **Gotify**: Self-hosted notification server (alternative to Pushover)
+- **Traefik**: Modern reverse proxy that makes deployment and SSL management easy
 
 ## Installation
 
