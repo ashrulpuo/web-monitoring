@@ -24,6 +24,6 @@ After installation, you can access the services at:
 
 Feel free to open issues or submit pull requests for improvements.
 
-## notes
+## Notes
 
-happy coding 
+Ashrul Shamsuddin - happy coding 
