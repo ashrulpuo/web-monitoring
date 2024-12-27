@@ -13,9 +13,9 @@
 
 After installation, you can access the services at:
 
-- Traefik Dashboard: `http://${TRAEFIK_DASHBOARD_HOST}:8080`
-- Gotify: `http://${GOTIFY_HOST}:8080`
-- Uptime Kuma: `http://${UPTIME_KUMA_HOST}:3001`
+- Traefik Dashboard: `http://${TRAEFIK_DASHBOARD_HOST}` default 8080
+- Gotify: `http://${GOTIFY_HOST}`
+- Uptime Kuma: `http://${UPTIME_KUMA_HOST}`
 
 ## Security Considerations
 
